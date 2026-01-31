@@ -71,7 +71,7 @@ def collect_weather():
     # --- MAIN EXECUTION ---
     
     # Updated path to match your repo structure
-    output_folder = "meteorological_dataset/weather_data"
+    output_folder = "data/weather/weather_data"
     os.makedirs(output_folder, exist_ok=True)
 
     # Loop through the Dictionary items (Key, Value)

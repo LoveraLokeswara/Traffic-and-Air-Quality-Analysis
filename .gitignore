@@ -5,5 +5,7 @@
 .env.production.local
 node_modules
 # Ignore weather_data folders
-air_quality_dataset/aq_data/
-meteorological_dataset/weather_data/
+data/air_quality/aq_data/
+data/weather/weather_data/
+data/traffic/filtered_roads_with_sums.csv
+data/traffic/summary_by_road.csv

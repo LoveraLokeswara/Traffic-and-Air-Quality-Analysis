@@ -6,9 +6,10 @@ import os
 def process_traffic():
     # --- Configuration ---
     # Paths relative to the project root
-    INPUT_PATH = "traffic_dataset/tf-ft-eng.csv"
-    OUTPUT_PATH = "traffic_dataset/filtered_roads_with_sums.csv"
-    
+    # Update these paths
+    INPUT_PATH = "data/traffic/tf-ft-eng.csv"
+    OUTPUT_PATH = "data/traffic/filtered_roads_with_sums.csv"
+        
     # The specific roads you selected in your notebook
     ROADS_KEEP = [
         "LAWRENCE AVE E / KENNEDY RD",                              # East
