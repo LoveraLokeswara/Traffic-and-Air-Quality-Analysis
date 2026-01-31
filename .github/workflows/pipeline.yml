@@ -19,10 +19,11 @@ jobs:
       - name: Install dependencies
         run: uv sync
 
-      - name: Scrape Data
+      - name: Scrape Data and Process Data
         run: |
           uv run python src/collect_air_quality.py
           uv run python src/collect_weather.py
+          uv run python src/process_traffic.py
 
       - name: Execute ARMA Analysis
         # This runs your notebook using the uv-managed environment
