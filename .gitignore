@@ -4,7 +4,14 @@
 .env.test.local
 .env.production.local
 node_modules
-# Ignore weather_data folders
+
+# --- Other -- 
+.venv/
+.DS_Store
+__pycache__/
+.ipynb_checkpoints/
+
+# --- DATA ---
 data/air_quality/aq_data/
 data/weather/weather_data/
 data/traffic/filtered_roads_with_sums.csv
