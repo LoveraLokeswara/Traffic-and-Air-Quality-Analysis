@@ -1,0 +1,24 @@
+name: Air Quality Analysis
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  run-analysis:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Execute ARMA Analysis
+        # This runs your notebook using the uv-managed environment
+        run: uv run jupyter execute arma_model_comparison.ipynb
