@@ -19,6 +19,11 @@ jobs:
       - name: Install dependencies
         run: uv sync
 
+      - name: Scrape Data
+        run: |
+          uv run python src/collect_air_quality.py
+          uv run python src/collect_weather.py
+
       - name: Execute ARMA Analysis
         # This runs your notebook using the uv-managed environment
         run: uv run jupyter execute arma_model_comparison.ipynb

@@ -4,3 +4,6 @@
 .env.test.local
 .env.production.local
 node_modules
+# Ignore weather_data folders
+air_quality_dataset/aq_data/
+meteorological_dataset/weather_data/
