@@ -21,7 +21,7 @@ STATIONS = {
 }
 
 START_YEAR = 2022
-END_YEAR = 2026
+END_YEAR = 2025
 
 def get_station_data(station_id, station_name, start_year, end_year):
     base_url = "https://climate.weather.gc.ca/climate_data/bulk_data_e.html"

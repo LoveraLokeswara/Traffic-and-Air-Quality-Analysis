@@ -10,9 +10,3 @@ node_modules
 .DS_Store
 __pycache__/
 .ipynb_checkpoints/
-
-# --- DATA ---
-data/air_quality/aq_data/
-data/weather/weather_data/
-data/traffic/filtered_roads_with_sums.csv
-data/traffic/summary_by_road.csv
