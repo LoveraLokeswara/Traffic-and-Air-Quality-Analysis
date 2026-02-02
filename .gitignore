@@ -4,3 +4,9 @@
 .env.test.local
 .env.production.local
 node_modules
+
+# --- Other -- 
+.venv/
+.DS_Store
+__pycache__/
+.ipynb_checkpoints/
