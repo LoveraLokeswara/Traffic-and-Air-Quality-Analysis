@@ -6,18 +6,24 @@ import os
 # This script gets the data from https://climate.weather.gc.ca/historical_data/search_historic_data_e.html
 
 # Configuration
-# Toronto City Centre (downtown) - 48549
-# Toronto North York (North) - 26953
-# Toronto INTL A Ontario (West) - 51459
-# Toronto City Onatrio (East) 31688
+    # 48549: "Toronto_City_Centre_Downtown",
+    # 26953: "Toronto_York_North",
+    # 31688: "Toronto_City_Ontario_East",
+    # 51459: "Toronto_Pearson_Intl_West",
 # --- CONFIGURATION ---
 # Format: { StationID : "Custom Name" }
 # Use underscores instead of spaces for safer filenames
 STATIONS = {
-    48549: "Toronto_City_Centre_Downtown",
-    26953: "Toronto_York_North",
-    31688: "Toronto_City_Ontario_East",
-    51459: "Toronto_Pearson_Intl_West"  
+    # 48549: "Toronto_City_Centre_Downtown",
+    # 26953: "Toronto_York_North",
+    # 31688: "Toronto_City_Ontario_East",
+    # 51459: "Toronto_Pearson_Intl_West",
+    #  48373: 'Sarnia',
+    #  52985: 'Kingston',
+    # 7868: 'Burlington',
+    # 49389: 'Thunder_Bay',
+    # 54838: 'Sault_Ste_Maria',
+    30578: 'Ottawa'
 }
 
 START_YEAR = 2022

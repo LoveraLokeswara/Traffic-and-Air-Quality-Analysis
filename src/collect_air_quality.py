@@ -8,9 +8,9 @@ def collect_air_quality():
     # Update these paths
     STATION_INFO_PATH = "data/air_quality/station_info.csv"
     OUTPUT_FOLDER = "data/air_quality/aq_data"
-        
+        # 'TORONTO DOWNTOWN', 'TORONTO EAST', 'TORONTO NORTH', 'TORONTO WEST',
     # Paraeters of interest
-    TARGET_STATIONS = ['TORONTO DOWNTOWN', 'TORONTO EAST', 'TORONTO NORTH', 'TORONTO WEST']
+    TARGET_STATIONS = ['OTTAWA DOWNTOWN']
     POLLUTANT_ID = 36  # 36 = NO2
     YEAR = 2024
 
