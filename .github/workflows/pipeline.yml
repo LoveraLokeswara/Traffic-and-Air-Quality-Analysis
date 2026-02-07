@@ -2,7 +2,7 @@ name: Air Quality Analysis
 
 on:
   push:
-    branches: [main, "feature/*"]
+    branches: [main, "feature/*", "data_cleaning_new"]
   pull_request:
 
 jobs:
