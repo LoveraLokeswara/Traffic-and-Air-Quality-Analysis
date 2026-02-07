@@ -1,8 +1,8 @@
 air_quality:
-Toronto Downtown
+Toronto Downtown, Toronto West, Sault Ste. Marie
 
 traffic:
-POINT (-79.388845 43.643857)
+POINT (-79.388845 43.643857), POINT (-79.553512 43.71134), POINT (-84.22963 46.5411)
 
 weather:
-Toronto_City_Centre_Downtown
+Toronto_City_Centre_Downtown, Toronto_Pearson_Intl_West, SAULT STE. MARIE AIRPORT
