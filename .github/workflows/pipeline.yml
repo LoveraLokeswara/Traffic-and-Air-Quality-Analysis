@@ -1,7 +1,8 @@
 name: Air Quality Analysis
+
 on:
   push:
-    branches: [main,"feature/*"]
+    branches: [main, "feature/*"]
   pull_request:
 
 jobs:
@@ -19,12 +20,6 @@ jobs:
       - name: Install dependencies
         run: uv sync
 
-      - name: Scrape Data and Process Data
-        run: |
-          uv run python src/collect_air_quality.py
-          uv run python src/collect_weather.py
-          uv run python src/process_traffic.py
-
-      - name: Execute ARMA Analysis
-        # This runs your notebook using the uv-managed environment
-        run: uv run jupyter execute arma_model_comparison.ipynb
+      - name: Clean Data
+        # Executes only the specific data cleaning script
+        run: uv run python src/data-clean.py

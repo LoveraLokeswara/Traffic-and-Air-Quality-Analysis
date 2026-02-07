@@ -5,8 +5,6 @@ Reads station configurations from stations.txt, loads raw Air Quality, Traffic,
 and Weather data, merges them on a common (Station, Date) index, and performs
 advanced Multiple Imputation using scikit-learn's IterativeImputer.
 
-Usage:
-    python data/data-clean.py
 """
 
 # ====================================================================
@@ -33,8 +31,10 @@ from sklearn.impute import IterativeImputer
 # Define file paths using pathlib for cross-platform compatibility
 SCRIPT_DIR = Path(__file__).resolve().parent  # Current script's directory: data/
 PROJECT_ROOT = SCRIPT_DIR.parent  # Parent directory: repo root
-DATA_DIR = SCRIPT_DIR  # Data directory: data/
-STATIONS_FILE = PROJECT_ROOT / "stations.txt"  # Config file mapping air quality, traffic, and weather stations
+DATA_DIR = PROJECT_ROOT / 'data'  # Data directory: data/
+DATA_CLEAN_DIR = DATA_DIR / 'data_clean'  # Directory for cleaned data
+STATIONS_FILE = DATA_CLEAN_DIR / "stations.txt"  # Config file in data/data_clean
+
 
 # Define timeframe for data filtering
 START_DATE = pd.Timestamp("2022-02-02")  # Beginning of the data collection period
@@ -518,7 +518,7 @@ def get_output_filename(station_name: str) -> Path:
     # Sanitize station name for filename: lowercase and replace spaces with underscores
     sanitized_name = station_name.lower().replace(" ", "_")
     filename = f"cleaned_data_{sanitized_name}.csv"
-    return PROJECT_ROOT / filename
+    return DATA_CLEAN_DIR / filename
 
 
 # ===================================================================

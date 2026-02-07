@@ -1,0 +1,8 @@
+air_quality:
+Toronto Downtown, Toronto West, Sault Ste. Marie, Ottawa Downtown, Sarnia
+ 
+traffic:
+POINT (-79.388845 43.643857), POINT (-79.553512 43.71134), POINT (-84.22963 46.5411), POINT (-75.67392 45.41684), POINT (-80.96954 46.43512)
+ 
+weather:
+Toronto_City_Centre_Downtown, Toronto_Pearson_Intl_West, Sault_Ste_Maria, Ottawa, Sarnia
