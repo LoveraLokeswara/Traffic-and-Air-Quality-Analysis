@@ -19,7 +19,12 @@ with open('../data/air_quality/aq_data/station_51001_data.csv', 'r') as f:
 
 # Parse data starting from line 11 (0-indexed line 11 is row 12 in file)
 data_lines = []
+total_days = 0
+days_with_missing = 0
+days_rejected = 0
+
 for line in lines[11:]:  # Skip first 11 lines (metadata + header)
+    total_days += 1
     parts = line.strip().split(',')
     if len(parts) >= 27:  # Station ID, Pollutant, Date, 24 hours
         # Extract: station_id (0), pollutant (1-2 joined), date (2), hours (3-26)
@@ -27,31 +32,54 @@ for line in lines[11:]:  # Skip first 11 lines (metadata + header)
         date_str = parts[2]
         hours = parts[3:27]  # 24 hours
         
-        # Convert hours to numeric, replacing 9999 with NaN
+        # Convert hours to numeric, replacing 9999 and -999 with NaN
         hour_values = []
         for h in hours:
             try:
                 val = float(h) if h.strip() else np.nan
-                val = np.nan if val == 9999 else val
+                # Handle both positive and negative missing value indicators
+                if val == 9999 or val == -999 or val < 0:
+                    val = np.nan
                 hour_values.append(val)
             except:
                 hour_values.append(np.nan)
         
-        # Compute mean
+        # Compute mean (only if we have at least 12 valid hours - 50% data coverage)
         valid_hours = [h for h in hour_values if not np.isnan(h)]
-        if valid_hours:
+        if len(valid_hours) < 24:
+            days_with_missing += 1
+        
+        if len(valid_hours) >= 12:  # At least 12 hours of data
             no2_mean = np.mean(valid_hours)
-            data_lines.append({'Date': date_str, 'NO2_Mean': no2_mean})
+            if no2_mean >= 0:  # Final sanity check - NO2 cannot be negative
+                data_lines.append({'Date': date_str, 'NO2_Mean': no2_mean})
+            else:
+                days_rejected += 1
+        else:
+            days_rejected += 1
 
 # Create DataFrame
 aq_data = pd.DataFrame(data_lines)
 aq_data['Date'] = pd.to_datetime(aq_data['Date'], errors='coerce')
 aq_data = aq_data.dropna(subset=['Date', 'NO2_Mean'])
 
+print(f"   Data Quality Summary:")
+print(f"     Total days processed: {total_days}")
+print(f"     Days with some missing hours: {days_with_missing}")
+print(f"     Days rejected (< 12 hours or invalid): {days_rejected}")
+print(f"     Days kept: {len(aq_data)}")
+print(f"     NO2 range: {aq_data['NO2_Mean'].min():.2f} to {aq_data['NO2_Mean'].max():.2f} ppb")
+print(f"     NO2 mean: {aq_data['NO2_Mean'].mean():.2f} ppb")
+
+if (aq_data['NO2_Mean'] < 0).any():
+    print(f"     ⚠️ WARNING: {(aq_data['NO2_Mean'] < 0).sum()} negative values still present!")
+else:
+    print(f"     ✓ All NO2 values are positive")
+
 # Save processed data
 output_path = '../data/air_quality/ottawa_air_quality_processed.csv'
 aq_data.to_csv(output_path, index=False)
-print(f"   ✓ Saved to: {output_path}")
+print(f"\n   ✓ Saved to: {output_path}")
 print(f"   Shape: {aq_data.shape}")
 print(f"   Date range: {aq_data['Date'].min()} to {aq_data['Date'].max()}")
 
