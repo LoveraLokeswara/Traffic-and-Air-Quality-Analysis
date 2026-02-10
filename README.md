@@ -118,13 +118,27 @@ The pipeline creates a comprehensive feature set for each station:
 4. **Stacking Ensemble** – Meta-learner (Ridge) combining base models
 
 ### Cross-Validation Strategy
-- **TimeSeriesSplit (n_splits=5):** Expanding window approach
-  - Fold 1: Train 0-20%, Validate 20%-40%
-  - Fold 2: Train 0-40%, Validate 40%-60%
-  - Fold 3: Train 0-60%, Validate 60%-80%
-  - Fold 4: Train 0-80%, Validate 80%-100%
-  - (Within 80% training data)
-- **Train/Test Split:** 80/20 temporal split
+
+**Temporal Data Split (80% Train / 20% Test):**
+```
+[─────── 80% Training Data ───────][── 20% Test Data ──]
+         (Used for CV only)         (Final evaluation)
+```
+
+**Time-Series Cross-Validation** (expanding window with 5 folds within training data):
+```
+Fold 1: [Train: 0-16%  ][Validate: 16-32%]
+Fold 2: [Train: 0-32%  ][Validate: 32-48%]
+Fold 3: [Train: 0-48%  ][Validate: 48-64%]
+Fold 4: [Train: 0-64%  ][Validate: 64-80%]
+(Fold 5 training on full 80%)
+```
+
+**Key Properties:**
+- **Expanding Window:** Training set grows with each fold; validation data always comes after training (no look-ahead bias)
+- **Temporal Order Preserved:** All folds respect chronological sequence → realistic for time-series
+- **No Data Leakage:** Test set (20%) is completely isolated and only used for final evaluation
+- **Implementation:** `sklearn.model_selection.TimeSeriesSplit(n_splits=5)`
 
 ### Stacking Ensemble Details
 - **Base Learners:** XGBoost, Random Forest, Linear Regression
