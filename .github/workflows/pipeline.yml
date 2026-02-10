@@ -22,3 +22,18 @@ jobs:
  
       - name: Clean Data
         run: uv run python src/data-clean.py
+ 
+      - name: Analysis with saved model
+        run: uv run python main.py
+ 
+      - name: Set up Quarto
+        uses: quarto-dev/quarto-actions/setup@v2
+ 
+      - name: Render Executive Report
+        run: quarto render report/executive_report.qmd --to html
+ 
+      - name: Upload Report Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: executive-report
+          path: report/executive_report.html
