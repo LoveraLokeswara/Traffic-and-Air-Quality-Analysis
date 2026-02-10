@@ -1,0 +1,24 @@
+---
+title: "Traffic and Air Quality: Executive Report"
+author: "Group 1"
+date: last-modified
+format:
+  html:
+    embed-resources: true  # Creates a single self-contained HTML file
+    toc: true
+    theme: cosmo
+---
+
+## Introduction
+(Write your introduction here regarding the Traffic and Air Quality analysis.)
+
+## Data Analysis
+The following analysis explores the relationship between traffic volume and NO2 levels.
+
+### NO2 Distribution
+We analyzed the distribution of NO2 across varying stations.
+
+![NO2 Distribution by Station](../results/eda_no2_distribution.png){#fig-dist}
+
+### Model Performance
+We compared XGBoost, Random Forest, GAM, and Stacking Ensembles.
