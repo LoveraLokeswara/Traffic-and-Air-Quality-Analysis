@@ -8,6 +8,35 @@ two scenarios (with traffic / without traffic).
 
 All composite figures (5 subplots per image, one per station) and summary
 tables are saved to the results/ folder.
+
+All trained models are saved to the models/ folder with naming convention:
+    {station}_{scenario}_{model_type}.pkl
+
+To load a saved model:
+    import joblib
+    
+    # For XGBoost or Random Forest:
+    model = joblib.load('models/station_name_with_traffic_xgboost.pkl')
+    predictions = model.predict(X_new)
+    
+    # For GAM (includes scaler):
+    gam_pkg = joblib.load('models/station_name_with_traffic_gam.pkl')
+    model = gam_pkg['model']
+    scaler = gam_pkg['scaler']
+    if scaler:
+        X_scaled = scaler.transform(X_new)
+        predictions = model.predict(X_scaled)
+    else:
+        predictions = model.predict(X_new)
+    
+    # For Stacking Ensemble:
+    stack_pkg = joblib.load('models/station_name_with_traffic_stacking.pkl')
+    base_models = stack_pkg['base_models']
+    meta_learner = stack_pkg['meta_learner']
+    # Generate base predictions
+    base_preds = np.column_stack([model.predict(X_new) for _, model in base_models])
+    # Final prediction
+    predictions = meta_learner.predict(base_preds)
 """
 
 import os
@@ -17,6 +46,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+import joblib
 from scipy import stats as sp_stats
 
 from sklearn.ensemble import RandomForestRegressor
@@ -35,10 +65,12 @@ sns.set_palette("husl")
 # ---------------------------------------------------------------------------
 # Paths
 # ---------------------------------------------------------------------------
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_DIR = os.path.join(BASE_DIR, "data", "data_clean")
 RESULTS_DIR = os.path.join(BASE_DIR, "results")
+MODELS_DIR = os.path.join(BASE_DIR, "models")
 os.makedirs(RESULTS_DIR, exist_ok=True)
+os.makedirs(MODELS_DIR, exist_ok=True)
 
 # ---------------------------------------------------------------------------
 # Constants
@@ -334,7 +366,7 @@ def train_and_evaluate(
     station: str,
     scenario: str,
 ) -> dict:
-    """Train all four models, evaluate, and return a results dict.
+    """Train all four models, evaluate, save models, and return a results dict.
 
     Returns
     -------
@@ -361,6 +393,10 @@ def train_and_evaluate(
 
     tscv = TimeSeriesSplit(n_splits=N_SPLITS)
 
+    # Create clean filename prefix
+    scenario_safe = scenario.lower().replace(" ", "_")
+    station_safe = station.replace(" ", "_").replace("/", "_")
+
     # ── XGBoost ──────────────────────────────────────────────────────────
     xgb_model = _get_xgb()
     cv_scores = _cv_loop(xgb_model, X_train, y_train, tscv)
@@ -369,6 +405,10 @@ def train_and_evaluate(
     xgb_pred = xgb_model.predict(X_test)
     results["XGBoost"] = evaluate(y_test.values, xgb_pred)
     predictions["XGBoost"] = xgb_pred
+    
+    # Save XGBoost model
+    xgb_path = os.path.join(MODELS_DIR, f"{station_safe}_{scenario_safe}_xgboost.pkl")
+    joblib.dump(xgb_model, xgb_path)
 
     # Feature importance from XGBoost
     fi = pd.DataFrame({"Feature": feature_cols, "Importance": xgb_model.feature_importances_})
@@ -382,11 +422,16 @@ def train_and_evaluate(
     rf_pred = rf_model.predict(X_test)
     results["Random Forest"] = evaluate(y_test.values, rf_pred)
     predictions["Random Forest"] = rf_pred
+    
+    # Save Random Forest model
+    rf_path = os.path.join(MODELS_DIR, f"{station_safe}_{scenario_safe}_random_forest.pkl")
+    joblib.dump(rf_model, rf_path)
 
     # ── GAM ──────────────────────────────────────────────────────────────
     gam_model = _build_gam_formula(feature_cols)
     cv_scores = _cv_loop_gam(feature_cols, X_train, y_train, tscv)
     cv_results["GAM"] = cv_scores
+    gam_uses_scaler = True
     try:
         gam_model.fit(X_train_scaled, y_train)
         gam_pred = gam_model.predict(X_test_scaled)
@@ -395,8 +440,14 @@ def train_and_evaluate(
         gam_model = _build_gam_formula(feature_cols)
         gam_model.fit(X_train.values, y_train)
         gam_pred = gam_model.predict(X_test.values)
+        gam_uses_scaler = False
     results["GAM"] = evaluate(y_test.values, gam_pred)
     predictions["GAM"] = gam_pred
+    
+    # Save GAM model (with scaler if used)
+    gam_path = os.path.join(MODELS_DIR, f"{station_safe}_{scenario_safe}_gam.pkl")
+    gam_package = {"model": gam_model, "scaler": scaler if gam_uses_scaler else None, "feature_cols": feature_cols}
+    joblib.dump(gam_package, gam_path)
 
     # ── Stacking Ensemble (manual, TimeSeriesSplit-aware) ────────────────
     base_models = [
@@ -409,6 +460,8 @@ def train_and_evaluate(
     oof_preds = np.zeros((n_train, n_base))
     test_preds = np.zeros((len(X_test), n_base))
 
+    # Store trained base models for stacking
+    trained_base_models = []
     for idx, (name, model) in enumerate(base_models):
         for train_idx, val_idx in tscv.split(X_train):
             m = clone(model)
@@ -416,6 +469,7 @@ def train_and_evaluate(
             oof_preds[val_idx, idx] = m.predict(X_train.iloc[val_idx])
         # Retrain on full training set
         model.fit(X_train, y_train)
+        trained_base_models.append((name, model))
         test_preds[:, idx] = model.predict(X_test)
 
     meta_learner = Ridge(alpha=1.0)
@@ -434,6 +488,15 @@ def train_and_evaluate(
         name: coef for (name, _), coef in zip(base_models, meta_learner.coef_)
     }
     meta_coefficients["Intercept"] = meta_learner.intercept_
+    
+    # Save Stacking Ensemble (base models + meta learner)
+    stacking_path = os.path.join(MODELS_DIR, f"{station_safe}_{scenario_safe}_stacking.pkl")
+    stacking_package = {
+        "base_models": trained_base_models,
+        "meta_learner": meta_learner,
+        "feature_cols": feature_cols,
+    }
+    joblib.dump(stacking_package, stacking_path)
 
     tag = f"[{station} | {scenario}]"
     print(f"    {tag}  RMSE → XGB {results['XGBoost']['RMSE']:.3f}  "
@@ -796,6 +859,14 @@ def main():
     print("  Files:")
     for f_name in sorted(os.listdir(RESULTS_DIR)):
         print(f"    - {f_name}")
+    
+    print(f"\n  All trained models saved to: {MODELS_DIR}/")
+    print("  Models:")
+    model_files = sorted(os.listdir(MODELS_DIR))
+    for f_name in model_files:
+        print(f"    - {f_name}")
+    print(f"\n  Total models saved: {len(model_files)}")
+    
     print("=" * 70)
     print("  Pipeline complete.")
 
