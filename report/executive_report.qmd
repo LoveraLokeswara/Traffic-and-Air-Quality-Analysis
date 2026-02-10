@@ -1,0 +1,112 @@
+---
+title: "Traffic and Air Quality: Executive Report"
+author: "Group 1"
+date: last-modified
+format:
+  pdf:
+    fontsize: 11pt
+    geometry: margin=1in
+    number-sections: true
+    toc: true
+    toc-title: "Table of Contents"
+    toc-depth: 2
+header-includes:
+  - \usepackage{enumitem}
+  - \setlist[itemize]{itemsep=2pt, topsep=2pt, parsep=0pt, partopsep=0pt}
+  - \usepackage{titling}
+  - \pretitle{\begin{center}\LARGE}
+  - \posttitle{\par\end{center}\vspace{0.5em}}
+  - \predate{\begin{center}\large}
+  - \postdate{\par\end{center}\newpage}
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+```{=latex}
+\newpage
+```
+
+## Executive Summary
+(Write your executive summary here regarding the Traffic and Air Quality analysis.)
+
+### Business Problem
+(Write your business problem here regarding the Traffic and Air Quality analysis.)
+
+### Objectives
+(Write your objectives here regarding the Traffic and Air Quality analysis.)
+- find the relationship between traffic and NO2 levels
+
+
+
+## Methodology
+(Write your methodology here regarding the Traffic and Air Quality analysis.)
+
+### Data Collection and Description
+(Write your data collection and cleaning here regarding the Traffic and Air Quality analysis.)
+(Web-scraping, etc.)
+data dictionary (link to github data_description.md)
+
+### Data Analysis
+The following analysis explores the relationship between traffic volume and NO2 levels.
+
+correlation plot (link to github results/eda_correlation_matrices.png)
+seasonal pattern plot (link to github results/eda_seasonal_pattern.png)
+
+### Model Architecture
+- Feature Engineering
+- k-fold Cross-Validation (expanding window)
+
+cross-validation plot (link to github results/cv_vs_test_with_traffic.png)
+
+
+<!-- Note: XGBoost, RF, GAM,Stacking Ensemble -->
+- Model Performance and Evaluation Metrics (RMSE)
+- Model Selection (RMSE)
+
+plots:
+- feature importance
+
+
+## Results
+(Write your results here regarding the Traffic and Air Quality analysis.)
+- Shareholder value impact
+- Relationship between traffic and NO2 levels
+- Business impact and recommendations
+
+Answer these questions:
+- Is there a positive or negative association between traffic and air quality?
+- Is increased traffic volume associated with higher concentrations of air pollutants in Toronto?
+- Does traffic explain a meaningful proportion of variation in air quality after controlling for
+time effects?
+- Is there evidence of nonlinear effects between traffic volume and air pollution levels?
+- Does the relationship between traffic and air quality change over time?
+
+
+### Conclusions
+- Relationship between traffic and NO2 levels
+- answer the questions in proposal
+
+### Limitations 
+(Write your limitations here regarding the Traffic and Air Quality analysis.)
+- Data limitations (hourly, daily data, location, time)
+
+
+### Future Directions
+- Future Directions
+- 
+
+<!-- 
+Note: 
+### NO2 Distribution
+We analyzed the distribution of NO2 across varying stations.
+
+![NO2 Distribution by Station](../results/eda_no2_distribution.png){#fig-dist} -->
+
+## References
+
+
+## Appendix
+
+

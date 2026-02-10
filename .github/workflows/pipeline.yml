@@ -1,25 +1,39 @@
 name: Air Quality Analysis
-
+ 
 on:
   push:
-    branches: [main, "feature/*", "data_cleaning_new"]
+    branches: [main]
   pull_request:
-
+ 
 jobs:
   run-analysis:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
+ 
       - name: Install uv
         uses: astral-sh/setup-uv@v5
         with:
           enable-cache: true
-
+ 
       - name: Install dependencies
         run: uv sync
-
+ 
       - name: Clean Data
-        # Executes only the specific data cleaning script
         run: uv run python src/data-clean.py
+ 
+      - name: Analysis with saved model
+        run: uv run python main.py
+ 
+      - name: Set up Quarto
+        uses: quarto-dev/quarto-actions/setup@v2
+ 
+      - name: Render Executive Report
+        run: quarto render report/executive_report.qmd --to html
+ 
+      - name: Upload Report Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: executive-report
+          path: report/executive_report.html
