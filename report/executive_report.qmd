@@ -1,13 +1,26 @@
 ---
-title: "Traffic and Air Quality: Executive Report"
-author: "Group 1"
-date: last-modified
 format:
-  html:
-    embed-resources: true  # Creates a single self-contained HTML file
-    toc: true
-    theme: cosmo
+ pdf:
+   fontsize: 11pt
+   geometry: margin=1in
+   number-sections: false
+header-includes:
+ - \usepackage{enumitem}
+ - \setlist[itemize]{itemsep=2pt, topsep=2pt, parsep=0pt, partopsep=0pt}
+execute:
+ echo: false
+ warning: false
+ message: false
 ---
+
+```{=latex}
+\begin{center}
+\textbf{Traffic and Air Quality: Executive Report}\\
+Group 1
+\end{center}
+
+\vspace{-1.5em}
+```
 
 ## Introduction
 (Write your introduction here regarding the Traffic and Air Quality analysis.)
