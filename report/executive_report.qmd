@@ -75,6 +75,14 @@ plots:
 - Relationship between traffic and NO2 levels
 - Business impact and recommendations
 
+Answer these questions:
+- Is there a positive or negative association between traffic and air quality?
+- Is increased traffic volume associated with higher concentrations of air pollutants in Toronto?
+- Does traffic explain a meaningful proportion of variation in air quality after controlling for
+time effects?
+- Is there evidence of nonlinear effects between traffic volume and air pollution levels?
+- Does the relationship between traffic and air quality change over time?
+
 
 ### Conclusions
 - Relationship between traffic and NO2 levels
@@ -95,4 +103,10 @@ Note:
 We analyzed the distribution of NO2 across varying stations.
 
 ![NO2 Distribution by Station](../results/eda_no2_distribution.png){#fig-dist} -->
+
+## References
+
+
+## Appendix
+
 
