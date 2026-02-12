@@ -311,10 +311,6 @@ def engineer_features(df_raw: pd.DataFrame, with_traffic: bool) -> tuple[pd.Data
             "Wind_NS", "Wind_EW",
         ]
     else:
-        df["Wind_Rolling_7"] = df["Wind_Gust"].rolling(window=7, min_periods=1).mean()
-        df["Temp_x_Wind"] = df["Temp"] * df["Wind_Gust"]
-        df["Precip_x_Wind"] = df["Precip"] * df["Wind_Gust"]
-
         feature_cols = [
             # Raw features (no traffic)
             "Temp", "Precip", "Wind_Gust",
@@ -323,9 +319,7 @@ def engineer_features(df_raw: pd.DataFrame, with_traffic: bool) -> tuple[pd.Data
             # Lag
             "NO2_Lag_1", "NO2_Lag_7",
             # Rolling
-            "NO2_Rolling_7", "Temp_Rolling_7", "Wind_Rolling_7",
-            # Interaction
-            "Temp_x_Wind", "Precip_x_Wind",
+            "NO2_Rolling_7", "Temp_Rolling_7", 
             # Wind components
             "Wind_NS", "Wind_EW",
         ]
@@ -745,40 +739,6 @@ def plot_predictions(all_results: dict, stations: list[str], scenario_tag: str):
     fig.savefig(_fname(f"predictions_{safe}.png"), dpi=200, bbox_inches="tight")
     plt.close(fig)
 
-
-def plot_scatter_actual_vs_pred(all_results: dict, stations: list[str], scenario_tag: str):
-    """Scatter: actual vs predicted for every model, centered 2-row layout."""
-    fig, axes_dict = _create_station_figure(stations, cell_h=5.0, wspace=0.75)
-    toronto, others = _split_stations(stations)
-    for station in stations:
-        ax = axes_dict[station]
-        r = all_results[station]
-        actual = r["y_test"]
-        for model_name in MODEL_NAMES:
-            pred = r["predictions"][model_name]
-            ax.scatter(actual, pred, alpha=0.35, s=15, label=model_name,
-                       color=MODEL_COLORS[model_name])
-        lo = min(actual.min(), min(r["predictions"][m].min() for m in MODEL_NAMES))
-        hi = max(actual.max(), max(r["predictions"][m].max() for m in MODEL_NAMES))
-        ax.plot([lo, hi], [lo, hi], "k--", linewidth=1.5, label="Perfect")
-        ax.set_title(station, fontweight="bold")
-        ax.set_xlabel("Actual NO$_2$")
-        ax.tick_params(axis="x")
-        ax.tick_params(axis="y")
-        ax.grid(True, alpha=0.3)
-        ax.legend(loc="upper left")
-    if toronto:
-        axes_dict[toronto[0]].set_ylabel("Predicted NO$_2$")
-    if others:
-        axes_dict[others[0]].set_ylabel("Predicted NO$_2$")
-    fig.suptitle(f"Actual vs Predicted ({scenario_tag})",
-                 fontweight="bold", y=0.98)
-    fig.tight_layout()
-    safe = scenario_tag.lower().replace(" ", "_")
-    fig.savefig(_fname(f"scatter_actual_vs_pred_{safe}.png"), dpi=200, bbox_inches="tight")
-    plt.close(fig)
-
-
 def plot_residuals(all_results: dict, stations: list[str], scenario_tag: str):
     """Residual distribution for Stacking Ensemble, centered 2-row layout."""
     fig, axes_dict = _create_station_figure(stations, wspace=0.75)
@@ -971,7 +931,6 @@ def main():
         plot_model_performance(res, stations, tag)
         plot_feature_importance(res, stations, tag)
         plot_predictions(res, stations, tag)
-        plot_scatter_actual_vs_pred(res, stations, tag)
         plot_residuals(res, stations, tag)
         plot_cv_vs_test(res, stations, tag)
 
