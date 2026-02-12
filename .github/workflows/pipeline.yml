@@ -21,9 +21,9 @@ jobs:
         run: uv sync
  
       - name: Clean Data
-        run: uv run python src/data-clean.py
+        run: uv run python src/data_clean.py
  
-      - name: Analysis with saved model
+      - name: Analysis and Visualization
         run: uv run src/analysis.py
  
       - name: Set up Quarto
