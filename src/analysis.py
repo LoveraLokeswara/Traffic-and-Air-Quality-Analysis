@@ -62,6 +62,21 @@ warnings.filterwarnings("ignore")
 plt.style.use("seaborn-v0_8-darkgrid")
 sns.set_palette("husl")
 
+# ── Global font sizes for publication-quality figures ─────────────────────
+plt.rcParams.update({
+    "font.size": 20,
+    "axes.titlesize": 22,
+    "axes.labelsize": 20,
+    "xtick.labelsize": 18,
+    "ytick.labelsize": 18,
+    "legend.fontsize": 18,
+    "figure.titlesize": 24,
+})
+
+# ── Global spacing parameters for multi-subplot figures ────────────────────
+GLOBAL_HSPACE = 0.50  # Vertical spacing between rows (increased for wider spacing)
+GLOBAL_WSPACE = 1.0   # Horizontal spacing between columns
+
 # ---------------------------------------------------------------------------
 # Paths
 # ---------------------------------------------------------------------------
@@ -147,63 +162,82 @@ def run_eda(datasets: dict[str, pd.DataFrame]) -> pd.DataFrame:
     print("\n  Summary statistics saved to results/eda_summary_statistics.csv")
 
     # ── 2b. NO2 time-series ──────────────────────────────────────────────
-    fig, axes = plt.subplots(1, n, figsize=(5 * n, 4), sharey=True)
-    for ax, name in zip(axes, stations):
+    toronto, others = _split_stations(stations)
+    fig, axes_dict = _create_station_figure(stations, sharey=True)
+    for name in stations:
+        ax = axes_dict[name]
         df = datasets[name]
         ax.plot(df["Date"], df[TARGET], linewidth=0.6, alpha=0.8)
-        ax.set_title(name, fontsize=11, fontweight="bold")
+        ax.set_title(name, fontweight="bold")
         ax.set_xlabel("Date")
         ax.tick_params(axis="x", rotation=30)
+        ax.tick_params(axis="y")
         ax.grid(True, alpha=0.3)
-    axes[0].set_ylabel("NO$_2$ (ppb)")
-    fig.suptitle("NO$_2$ Time Series by Station", fontsize=14, fontweight="bold", y=1.02)
+    if toronto:
+        axes_dict[toronto[0]].set_ylabel("NO$_2$ (ppb)")
+    if others:
+        axes_dict[others[0]].set_ylabel("NO$_2$ (ppb)")
+    fig.suptitle("NO$_2$ Time Series by Station", fontweight="bold", y=0.98)
     fig.tight_layout()
     fig.savefig(os.path.join(RESULTS_DIR, "eda_no2_timeseries.png"), dpi=200, bbox_inches="tight")
     plt.close(fig)
 
     # ── 2c. NO2 distribution ─────────────────────────────────────────────
-    fig, axes = plt.subplots(1, n, figsize=(5 * n, 4), sharey=True)
-    for ax, name in zip(axes, stations):
+    fig, axes_dict = _create_station_figure(stations, sharey=True)
+    for name in stations:
+        ax = axes_dict[name]
         df = datasets[name]
         ax.hist(df[TARGET].dropna(), bins=40, edgecolor="black", alpha=0.7)
         ax.axvline(df[TARGET].mean(), color="red", linestyle="--", label=f"mean={df[TARGET].mean():.1f}")
-        ax.set_title(name, fontsize=11, fontweight="bold")
+        ax.set_title(name, fontweight="bold")
         ax.set_xlabel("NO$_2$ (ppb)")
-        ax.legend(fontsize=8)
+        ax.legend()
+        ax.tick_params(axis="x")
+        ax.tick_params(axis="y")
         ax.grid(True, alpha=0.3, axis="y")
-    axes[0].set_ylabel("Frequency")
-    fig.suptitle("NO$_2$ Distribution by Station", fontsize=14, fontweight="bold", y=1.02)
+    if toronto:
+        axes_dict[toronto[0]].set_ylabel("Frequency")
+    if others:
+        axes_dict[others[0]].set_ylabel("Frequency")
+    fig.suptitle("NO$_2$ Distribution by Station", fontweight="bold", y=0.98)
     fig.tight_layout()
     fig.savefig(os.path.join(RESULTS_DIR, "eda_no2_distribution.png"), dpi=200, bbox_inches="tight")
     plt.close(fig)
 
     # ── 2d. Seasonal (monthly) NO2 ───────────────────────────────────────
-    fig, axes = plt.subplots(1, n, figsize=(5 * n, 4), sharey=True)
-    for ax, name in zip(axes, stations):
+    fig, axes_dict = _create_station_figure(stations, sharey=True)
+    for name in stations:
+        ax = axes_dict[name]
         df = datasets[name].copy()
         df["Month"] = df["Date"].dt.month
         monthly = df.groupby("Month")[TARGET].mean()
         ax.plot(monthly.index, monthly.values, marker="o", linewidth=2, markersize=6)
-        ax.set_title(name, fontsize=11, fontweight="bold")
+        ax.set_title(name, fontweight="bold")
         ax.set_xlabel("Month")
         ax.set_xticks(range(1, 13))
+        ax.tick_params(axis="x")
+        ax.tick_params(axis="y")
         ax.grid(True, alpha=0.3)
-    axes[0].set_ylabel("Mean NO$_2$ (ppb)")
-    fig.suptitle("Seasonal NO$_2$ Pattern by Station", fontsize=14, fontweight="bold", y=1.02)
+    if toronto:
+        axes_dict[toronto[0]].set_ylabel("Mean NO$_2$ (ppb)")
+    if others:
+        axes_dict[others[0]].set_ylabel("Mean NO$_2$ (ppb)")
+    fig.suptitle("Seasonal NO$_2$ Pattern by Station", fontweight="bold", y=0.98)
     fig.tight_layout()
     fig.savefig(os.path.join(RESULTS_DIR, "eda_seasonal_pattern.png"), dpi=200, bbox_inches="tight")
     plt.close(fig)
 
     # ── 2e. Correlation heatmaps ─────────────────────────────────────────
     corr_cols = [TARGET, TRAFFIC_COL, "Temp", "Precip", "Wind_Gust", "Wind_Dir"]
-    fig, axes = plt.subplots(1, n, figsize=(5 * n, 4.5))
-    for ax, name in zip(axes, stations):
+    fig, axes_dict = _create_station_figure(stations, cell_h=5.5, hspace=0.45, wspace=0.75)
+    for name in stations:
+        ax = axes_dict[name]
         cm = datasets[name][corr_cols].corr()
         sns.heatmap(cm, annot=True, fmt=".2f", cmap="coolwarm", center=0,
                     square=True, linewidths=0.5, cbar=False, ax=ax,
-                    annot_kws={"size": 8})
-        ax.set_title(name, fontsize=11, fontweight="bold")
-    fig.suptitle("Feature Correlation by Station", fontsize=14, fontweight="bold", y=1.02)
+                    annot_kws={"size": 11})
+        ax.set_title(name, fontweight="bold")
+    fig.suptitle("Feature Correlation by Station", fontweight="bold", y=0.98)
     fig.tight_layout()
     fig.savefig(os.path.join(RESULTS_DIR, "eda_correlation_matrices.png"), dpi=200, bbox_inches="tight")
     plt.close(fig)
@@ -558,43 +592,88 @@ def _fname(name: str) -> str:
     return os.path.join(RESULTS_DIR, name)
 
 
-def plot_model_performance(all_results: dict, stations: list[str], scenario_tag: str):
-    """Bar chart of RMSE & R² for every model, 5 subplots (one per station)."""
-    n = len(stations)
-    fig, axes = plt.subplots(2, n, figsize=(5 * n, 8), sharey="row")
+def _split_stations(stations):
+    """Split stations into Toronto (top row) and non-Toronto (bottom row)."""
+    toronto = [s for s in stations if "Toronto" in s]
+    others = [s for s in stations if "Toronto" not in s]
+    return toronto, others
 
-    for col, station in enumerate(stations):
+
+def _create_station_figure(stations, cell_w=7.5, cell_h=4.5, sharey=False,
+                           hspace=GLOBAL_HSPACE, wspace=GLOBAL_WSPACE):
+    """Create figure with centered 2-row layout (Toronto top, others bottom).
+
+    Returns (fig, axes_dict) where axes_dict maps station_name -> Axes.
+    """
+    toronto, others = _split_stations(stations)
+    n_top, n_bot = len(toronto), len(others)
+    ncols_gs = 6  # LCM(2, 3) for even column spanning
+    col_span = 2
+
+    fig = plt.figure(figsize=(cell_w * 3, cell_h * 2))
+    gs = fig.add_gridspec(2, ncols_gs, hspace=hspace, wspace=wspace)
+
+    axes_dict = {}
+    all_axes = []
+
+    # Top row - Toronto stations, centered
+    top_offset = (ncols_gs - n_top * col_span) // 2
+    for i, station in enumerate(toronto):
+        c = top_offset + i * col_span
+        ax = fig.add_subplot(gs[0, c:c + col_span])
+        axes_dict[station] = ax
+        all_axes.append(ax)
+
+    # Bottom row - other stations, centered
+    bot_offset = (ncols_gs - n_bot * col_span) // 2
+    for i, station in enumerate(others):
+        c = bot_offset + i * col_span
+        ax = fig.add_subplot(gs[1, c:c + col_span])
+        axes_dict[station] = ax
+        all_axes.append(ax)
+
+    if sharey and len(all_axes) > 1:
+        for ax in all_axes[1:]:
+            ax.sharey(all_axes[0])
+        for ax in all_axes:
+            ax.tick_params(labelleft=True)
+
+    return fig, axes_dict
+
+
+def plot_model_performance(all_results: dict, stations: list[str], scenario_tag: str):
+    """Bar chart of RMSE for every model, centered 2-row layout."""
+    fig, axes_dict = _create_station_figure(stations, cell_w=6.0, cell_h=5.0, wspace=0.75)
+    toronto, others = _split_stations(stations)
+
+    for station in stations:
+        ax = axes_dict[station]
         res = all_results[station]["results"]
         names = list(res.keys())
         rmses = [res[m]["RMSE"] for m in names]
-        r2s = [res[m]["R2"] for m in names]
         colors = [MODEL_COLORS.get(m, "grey") for m in names]
 
-        # RMSE
-        ax = axes[0, col]
         bars = ax.barh(names, rmses, color=colors)
         for bar, v in zip(bars, rmses):
             ax.text(v + 0.05, bar.get_y() + bar.get_height() / 2, f"{v:.3f}",
-                    va="center", fontsize=8, fontweight="bold")
-        ax.set_title(station, fontsize=10, fontweight="bold")
+                    va="center", fontweight="bold")
+        ax.set_title(station, fontweight="bold")
+        ax.set_xlabel("RMSE")
         ax.invert_yaxis()
+        ax.tick_params(axis="x")
+        ax.tick_params(axis="y")
+        # Only show y-axis labels on leftmost subplots
+        if station != (toronto[0] if toronto else None) and station != (others[0] if others else None):
+            ax.set_yticklabels([])
         ax.grid(True, alpha=0.3, axis="x")
-        if col == 0:
-            ax.set_xlabel("RMSE (lower is better)")
 
-        # R²
-        ax = axes[1, col]
-        bars = ax.barh(names, r2s, color=colors)
-        for bar, v in zip(bars, r2s):
-            ax.text(max(v + 0.01, 0.01), bar.get_y() + bar.get_height() / 2, f"{v:.3f}",
-                    va="center", fontsize=8, fontweight="bold")
-        ax.invert_yaxis()
-        ax.grid(True, alpha=0.3, axis="x")
-        if col == 0:
-            ax.set_xlabel("R² (higher is better)")
+    if toronto:
+        axes_dict[toronto[0]].set_ylabel("RMSE")
+    if others:
+        axes_dict[others[0]].set_ylabel("RMSE")
 
-    fig.suptitle(f"Model Performance Comparison ({scenario_tag})",
-                 fontsize=14, fontweight="bold", y=1.02)
+    fig.suptitle(f"Model Performance – RMSE ({scenario_tag})",
+                 fontweight="bold", y=0.98)
     fig.tight_layout()
     safe = scenario_tag.lower().replace(" ", "_")
     fig.savefig(_fname(f"model_performance_{safe}.png"), dpi=200, bbox_inches="tight")
@@ -602,17 +681,33 @@ def plot_model_performance(all_results: dict, stations: list[str], scenario_tag:
 
 
 def plot_feature_importance(all_results: dict, stations: list[str], scenario_tag: str):
-    """Top-10 XGBoost feature importances, one subplot per station."""
-    n = len(stations)
-    fig, axes = plt.subplots(1, n, figsize=(5 * n, 5))
-    for ax, station in zip(axes, stations):
+    """Top-10 XGBoost feature importances, centered 2-row layout."""
+    from matplotlib.patches import Patch
+
+    fig, axes_dict = _create_station_figure(stations, cell_w=8.0, cell_h=5.5, wspace=1.2)
+    for station in stations:
+        ax = axes_dict[station]
         fi = all_results[station]["feature_importance"].head(10)
-        ax.barh(fi["Feature"], fi["Importance"], color="#3498db")
-        ax.set_title(station, fontsize=10, fontweight="bold")
+        # Color traffic-related features red, others blue
+        colors = ["#e74c3c" if "Traffic" in feat else "#3498db"
+                  for feat in fi["Feature"]]
+        ax.barh(fi["Feature"], fi["Importance"], color=colors)
+        ax.set_title(station, fontweight="bold")
+        ax.set_xlabel("Importance")
+        ax.tick_params(axis="x")
+        ax.tick_params(axis="y")
         ax.invert_yaxis()
         ax.grid(True, alpha=0.3, axis="x")
+
+    # Add legend when traffic features may be present
+    if "Traffic" in scenario_tag:
+        legend_elements = [Patch(facecolor="#e74c3c", label="Traffic-related"),
+                           Patch(facecolor="#3498db", label="Non-traffic")]
+        fig.legend(handles=legend_elements, loc="upper right",
+                   framealpha=0.9, bbox_to_anchor=(0.98, 0.98))
+
     fig.suptitle(f"XGBoost Feature Importance – Top 10 ({scenario_tag})",
-                 fontsize=14, fontweight="bold", y=1.02)
+                 fontweight="bold", y=0.98)
     fig.tight_layout()
     safe = scenario_tag.lower().replace(" ", "_")
     fig.savefig(_fname(f"feature_importance_{safe}.png"), dpi=200, bbox_inches="tight")
@@ -620,10 +715,11 @@ def plot_feature_importance(all_results: dict, stations: list[str], scenario_tag
 
 
 def plot_predictions(all_results: dict, stations: list[str], scenario_tag: str):
-    """Actual vs Stacking Ensemble predictions, one subplot per station."""
-    n = len(stations)
-    fig, axes = plt.subplots(1, n, figsize=(5 * n, 4))
-    for ax, station in zip(axes, stations):
+    """Actual vs Stacking Ensemble predictions, centered 2-row layout."""
+    fig, axes_dict = _create_station_figure(stations, wspace=0.75)
+    toronto, others = _split_stations(stations)
+    for station in stations:
+        ax = axes_dict[station]
         r = all_results[station]
         dates = r["test_dates"]
         actual = r["y_test"]
@@ -632,14 +728,18 @@ def plot_predictions(all_results: dict, stations: list[str], scenario_tag: str):
         ax.plot(dates, pred, label="Stacking", linewidth=1, alpha=0.8,
                 linestyle="--", color=MODEL_COLORS["Stacking Ensemble"])
         rmse = r["results"]["Stacking Ensemble"]["RMSE"]
-        r2 = r["results"]["Stacking Ensemble"]["R2"]
-        ax.set_title(f"{station}\nRMSE={rmse:.3f}  R²={r2:.3f}", fontsize=10, fontweight="bold")
+        ax.set_title(f"{station}\nRMSE={rmse:.3f}", fontweight="bold")
+        ax.set_xlabel("Date")
         ax.tick_params(axis="x", rotation=30)
-        ax.legend(fontsize=7, loc="upper right")
+        ax.tick_params(axis="y")
+        ax.legend(loc="upper right")
         ax.grid(True, alpha=0.3)
-    axes[0].set_ylabel("NO$_2$ (ppb)")
+    if toronto:
+        axes_dict[toronto[0]].set_ylabel("NO$_2$ (ppb)")
+    if others:
+        axes_dict[others[0]].set_ylabel("NO$_2$ (ppb)")
     fig.suptitle(f"Stacking Ensemble Predictions ({scenario_tag})",
-                 fontsize=14, fontweight="bold", y=1.02)
+                 fontweight="bold", y=0.98)
     fig.tight_layout()
     safe = scenario_tag.lower().replace(" ", "_")
     fig.savefig(_fname(f"predictions_{safe}.png"), dpi=200, bbox_inches="tight")
@@ -647,10 +747,11 @@ def plot_predictions(all_results: dict, stations: list[str], scenario_tag: str):
 
 
 def plot_scatter_actual_vs_pred(all_results: dict, stations: list[str], scenario_tag: str):
-    """Scatter: actual vs predicted for every model, one subplot per station."""
-    n = len(stations)
-    fig, axes = plt.subplots(1, n, figsize=(5 * n, 4.5))
-    for ax, station in zip(axes, stations):
+    """Scatter: actual vs predicted for every model, centered 2-row layout."""
+    fig, axes_dict = _create_station_figure(stations, cell_h=5.0, wspace=0.75)
+    toronto, others = _split_stations(stations)
+    for station in stations:
+        ax = axes_dict[station]
         r = all_results[station]
         actual = r["y_test"]
         for model_name in MODEL_NAMES:
@@ -660,13 +761,18 @@ def plot_scatter_actual_vs_pred(all_results: dict, stations: list[str], scenario
         lo = min(actual.min(), min(r["predictions"][m].min() for m in MODEL_NAMES))
         hi = max(actual.max(), max(r["predictions"][m].max() for m in MODEL_NAMES))
         ax.plot([lo, hi], [lo, hi], "k--", linewidth=1.5, label="Perfect")
-        ax.set_title(station, fontsize=10, fontweight="bold")
+        ax.set_title(station, fontweight="bold")
         ax.set_xlabel("Actual NO$_2$")
+        ax.tick_params(axis="x")
+        ax.tick_params(axis="y")
         ax.grid(True, alpha=0.3)
-        ax.legend(fontsize=6, loc="upper left")
-    axes[0].set_ylabel("Predicted NO$_2$")
+        ax.legend(loc="upper left")
+    if toronto:
+        axes_dict[toronto[0]].set_ylabel("Predicted NO$_2$")
+    if others:
+        axes_dict[others[0]].set_ylabel("Predicted NO$_2$")
     fig.suptitle(f"Actual vs Predicted ({scenario_tag})",
-                 fontsize=14, fontweight="bold", y=1.02)
+                 fontweight="bold", y=0.98)
     fig.tight_layout()
     safe = scenario_tag.lower().replace(" ", "_")
     fig.savefig(_fname(f"scatter_actual_vs_pred_{safe}.png"), dpi=200, bbox_inches="tight")
@@ -674,21 +780,27 @@ def plot_scatter_actual_vs_pred(all_results: dict, stations: list[str], scenario
 
 
 def plot_residuals(all_results: dict, stations: list[str], scenario_tag: str):
-    """Residual distribution for Stacking Ensemble, one subplot per station."""
-    n = len(stations)
-    fig, axes = plt.subplots(1, n, figsize=(5 * n, 4))
-    for ax, station in zip(axes, stations):
+    """Residual distribution for Stacking Ensemble, centered 2-row layout."""
+    fig, axes_dict = _create_station_figure(stations, wspace=0.75)
+    toronto, others = _split_stations(stations)
+    for station in stations:
+        ax = axes_dict[station]
         r = all_results[station]
         residuals = r["y_test"] - r["predictions"]["Stacking Ensemble"]
         ax.hist(residuals, bins=30, edgecolor="black", alpha=0.7, color="#8e44ad")
         ax.axvline(0, color="red", linestyle="--", linewidth=1.5)
         ax.set_title(f"{station}\nmean={residuals.mean():.2f}  std={residuals.std():.2f}",
-                     fontsize=10, fontweight="bold")
+                     fontweight="bold")
         ax.set_xlabel("Residual")
+        ax.tick_params(axis="x")
+        ax.tick_params(axis="y")
         ax.grid(True, alpha=0.3, axis="y")
-    axes[0].set_ylabel("Frequency")
+    if toronto:
+        axes_dict[toronto[0]].set_ylabel("Frequency")
+    if others:
+        axes_dict[others[0]].set_ylabel("Frequency")
     fig.suptitle(f"Stacking Ensemble Residuals ({scenario_tag})",
-                 fontsize=14, fontweight="bold", y=1.02)
+                 fontweight="bold", y=0.98)
     fig.tight_layout()
     safe = scenario_tag.lower().replace(" ", "_")
     fig.savefig(_fname(f"residuals_{safe}.png"), dpi=200, bbox_inches="tight")
@@ -696,12 +808,13 @@ def plot_residuals(all_results: dict, stations: list[str], scenario_tag: str):
 
 
 def plot_traffic_impact(results_with: dict, results_without: dict, stations: list[str]):
-    """Compare RMSE with/without traffic for every model, one subplot per station."""
-    n = len(stations)
-    fig, axes = plt.subplots(1, n, figsize=(5 * n, 5))
+    """Compare RMSE with/without traffic, centered 2-row layout."""
+    fig, axes_dict = _create_station_figure(stations, cell_w=6.5, cell_h=5.0, wspace=0.75)
+    toronto, others = _split_stations(stations)
     bar_width = 0.35
 
-    for ax, station in zip(axes, stations):
+    for station in stations:
+        ax = axes_dict[station]
         rw = results_with[station]["results"]
         rn = results_without[station]["results"]
         names = MODEL_NAMES
@@ -714,25 +827,37 @@ def plot_traffic_impact(results_with: dict, results_without: dict, stations: lis
         ax.barh(x + bar_width / 2, rmse_n, bar_width, label="No Traffic",
                 color="#e74c3c", alpha=0.85)
         ax.set_yticks(x)
-        ax.set_yticklabels(names, fontsize=8)
+        ax.tick_params(axis="x")
+        # Only show y-axis labels on leftmost subplots
+        if station == (toronto[0] if toronto else None) or station == (others[0] if others else None):
+            ax.set_yticklabels(names)
+        else:
+            ax.set_yticklabels([])
+        ax.set_xlabel("RMSE")
         ax.invert_yaxis()
-        ax.set_title(station, fontsize=10, fontweight="bold")
+        ax.set_title(station, fontweight="bold")
         ax.grid(True, alpha=0.3, axis="x")
-        ax.legend(fontsize=7)
-    axes[0].set_xlabel("RMSE")
-    fig.suptitle("Traffic Impact on Model RMSE", fontsize=14, fontweight="bold", y=1.02)
+    if toronto:
+        axes_dict[toronto[0]].set_ylabel("Model")
+    if others:
+        axes_dict[others[0]].set_ylabel("Model")
+    fig.suptitle("Traffic Impact on Model RMSE", fontweight="bold", y=0.98)
+    # Create a single legend for the entire figure
+    handles, labels = axes_dict[stations[0]].get_legend_handles_labels()
+    fig.legend(handles, labels, loc="upper right", bbox_to_anchor=(0.98, 0.98), framealpha=0.9)
     fig.tight_layout()
     fig.savefig(_fname("traffic_impact_comparison.png"), dpi=200, bbox_inches="tight")
     plt.close(fig)
 
 
 def plot_cv_vs_test(all_results: dict, stations: list[str], scenario_tag: str):
-    """CV RMSE vs Test RMSE for each model, one subplot per station."""
-    n = len(stations)
-    fig, axes = plt.subplots(1, n, figsize=(5 * n, 5))
+    """CV RMSE vs Test RMSE, centered 2-row layout."""
+    fig, axes_dict = _create_station_figure(stations, cell_w=6.5, cell_h=5.0, wspace=0.75)
+    toronto, others = _split_stations(stations)
     bar_width = 0.35
 
-    for ax, station in zip(axes, stations):
+    for station in stations:
+        ax = axes_dict[station]
         r = all_results[station]
         res = r["results"]
         cv = r["cv_results"]
@@ -744,14 +869,25 @@ def plot_cv_vs_test(all_results: dict, stations: list[str], scenario_tag: str):
         ax.barh(x - bar_width / 2, cv_rmses, bar_width, label="CV RMSE", color="#3498db", alpha=0.85)
         ax.barh(x + bar_width / 2, test_rmses, bar_width, label="Test RMSE", color="#e67e22", alpha=0.85)
         ax.set_yticks(x)
-        ax.set_yticklabels(names, fontsize=8)
+        ax.tick_params(axis="x")
+        # Only show y-axis labels on leftmost subplots
+        if station == (toronto[0] if toronto else None) or station == (others[0] if others else None):
+            ax.set_yticklabels(names)
+        else:
+            ax.set_yticklabels([])
+        ax.set_xlabel("RMSE")
         ax.invert_yaxis()
-        ax.set_title(station, fontsize=10, fontweight="bold")
+        ax.set_title(station, fontweight="bold")
         ax.grid(True, alpha=0.3, axis="x")
-        ax.legend(fontsize=7)
-    axes[0].set_xlabel("RMSE")
+    if toronto:
+        axes_dict[toronto[0]].set_ylabel("Model")
+    if others:
+        axes_dict[others[0]].set_ylabel("Model")
     fig.suptitle(f"Cross-Validation vs Test RMSE ({scenario_tag})",
-                 fontsize=14, fontweight="bold", y=1.02)
+                 fontweight="bold", y=0.98)
+    # Create a single legend for the entire figure
+    handles, labels = axes_dict[stations[0]].get_legend_handles_labels()
+    fig.legend(handles, labels, loc="upper right", bbox_to_anchor=(0.98, 0.98), framealpha=0.9)
     fig.tight_layout()
     safe = scenario_tag.lower().replace(" ", "_")
     fig.savefig(_fname(f"cv_vs_test_{safe}.png"), dpi=200, bbox_inches="tight")
