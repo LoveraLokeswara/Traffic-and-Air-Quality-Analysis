@@ -23,7 +23,7 @@ These were cleaned, aligned by date and station, and merged into per-station CSV
 - Notes: counts may include all vehicles or be stratified by vehicle class in raw data. Processing aggregated counts to daily totals or averages was performed in cleaning.
 
 ### Weather
-- Typical contents: meteorological observations such as temperature, precipitation, wind speed/gust and wind direction, humidity, etc.
+- Typical contents: meteorological observations such as temperature, precipitation, wind speed/gust and wind direction, etc.
 - Spatial scope: nearby weather stations (may be airport or local stations) matched to each air quality station.
 - Temporal resolution: commonly hourly; aggregated or interpolated to daily values in cleaned files.
 - Typical variables used here: `Temp` (°C), `Precip` (mm), `Wind_Gust` (speed), `Wind_Dir` (degrees).
@@ -56,4 +56,4 @@ The cleaned CSVs are stored in `data/data_clean/`. Each file contains daily rows
 **Notes & recommendations**
 - Units: most commonly used units are indicated above (°C for temperature, mm for precipitation, ppb for NO₂). For formal reporting, confirm units by reviewing the original raw files or `meteorological_metadata.yml` in `data/weather/`.
 - Aggregation: daily aggregation for `NO2_Mean` and `Traffic_Count` was used in the cleaned files. If you need hourly analysis, consult the original raw datasets in `data/traffic/` and `data/weather/`.
-- Missing values: the cleaning pipeline interpolates temperature and wind values, fills precipitation missing values with 0 when appropriate, and drops rows that remain missing for required feature columns. See `src/data-clean.py` for the exact cleaning logic.
+- Missing values: the cleaning pipeline interpolates temperature and wind values, fills precipitation missing values with 0 when appropriate, and drops rows that remain missing for required feature columns. See `src/data_clean.py` for the exact cleaning logic.
