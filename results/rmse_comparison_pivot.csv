@@ -1,11 +1,11 @@
 Station,Scenario,GAM,Random Forest,Stacking Ensemble,XGBoost
-Ottawa Downtown,No Traffic,1.6877,1.3176,1.9231,1.2834
-Ottawa Downtown,With Traffic,1.6636,1.3571,1.9871,1.3061
-Sarnia,No Traffic,2.9515,2.5353,2.6011,2.3617
-Sarnia,With Traffic,2.8149,2.5038,2.7584,2.4103
-Sault Ste. Marie,No Traffic,1.1891,1.1643,1.6095,1.1223
-Sault Ste. Marie,With Traffic,1.1083,1.1349,1.5924,1.0081
-Toronto Downtown,No Traffic,3.8588,3.1674,3.9102,3.0679
-Toronto Downtown,With Traffic,4.0006,3.1909,3.7695,3.0099
-Toronto West,No Traffic,12.2615,2.7681,3.6555,2.7061
-Toronto West,With Traffic,9.1472,2.8351,3.4897,2.7061
+Ottawa Downtown,No Traffic,1.6877,1.3209,1.9242,1.2834
+Ottawa Downtown,With Traffic,1.6636,1.3549,1.9861,1.3061
+Sarnia,No Traffic,2.9515,2.5341,2.6114,2.3617
+Sarnia,With Traffic,2.8149,2.5019,2.7491,2.4103
+Sault Ste. Marie,No Traffic,1.1891,1.1558,1.6142,1.1223
+Sault Ste. Marie,With Traffic,1.1083,1.1344,1.5902,1.0081
+Toronto Downtown,No Traffic,3.8588,3.1719,3.9032,3.0679
+Toronto Downtown,With Traffic,4.0006,3.1925,3.7717,3.0099
+Toronto West,No Traffic,12.2615,2.7608,3.6426,2.7061
+Toronto West,With Traffic,9.1472,2.8358,3.479,2.7061

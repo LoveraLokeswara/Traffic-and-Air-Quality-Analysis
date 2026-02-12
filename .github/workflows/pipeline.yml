@@ -24,7 +24,7 @@ jobs:
         run: uv run python src/data-clean.py
  
       - name: Analysis with saved model
-        run: uv run python main.py
+        run: uv run src/analysis.py
  
       - name: Set up Quarto
         uses: quarto-dev/quarto-actions/setup@v2
