@@ -1,6 +1,15 @@
-The meteorlogical cites were choosen as the closets station to a given air quality monitoring station 
+distances_air_quality_to_weather_station:
+  - location: "Toronto Downtown"
+    distance_km: 1.93
 
-- Torornto City Centre station is 2.07 km away from the Toronto Downtwon air quality monitoring station 
-- Toronto City Ontario station is 13.56 km away from Toronto East 
-- Toronto Pearson station is 7.89 km away from Toronto West 
-- Toronto York North is 0.05km away from Toronto North 
+  - location: "Toronto West"
+    distance_km: 7.69
+
+  - location: "Ottawa"
+    distance_km: 6.95
+
+  - location: "Sarnia"
+    distance_km: 7.02
+
+  - location: "Sault Ste. Marie"
+    distance_km: 17.13
