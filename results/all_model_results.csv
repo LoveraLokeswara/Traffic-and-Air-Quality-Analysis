@@ -7,14 +7,14 @@ Ottawa Downtown,No Traffic,XGBoost,1.3069,0.9429,0.7623,69.84
 Ottawa Downtown,No Traffic,Random Forest,1.3266,1.0055,0.7551,81.15
 Ottawa Downtown,No Traffic,GAM,1.6767,1.2971,0.6087,80.51
 Ottawa Downtown,No Traffic,Stacking Ensemble,1.9954,1.7415,0.4459,164.5
-Sarnia,With Traffic,XGBoost,2.4103,1.8741,0.5331,34.63
-Sarnia,With Traffic,Random Forest,2.5019,1.9782,0.497,38.5
-Sarnia,With Traffic,GAM,2.8149,2.1592,0.3633,38.72
-Sarnia,With Traffic,Stacking Ensemble,2.7491,2.0958,0.3927,41.66
-Sarnia,No Traffic,XGBoost,2.3788,1.8706,0.5453,34.43
-Sarnia,No Traffic,Random Forest,2.5165,1.998,0.4911,39.11
-Sarnia,No Traffic,GAM,2.7748,2.1337,0.3813,37.71
-Sarnia,No Traffic,Stacking Ensemble,2.6612,2.1002,0.4309,42.84
+Sarnia,With Traffic,XGBoost,2.5428,2.0029,0.4804,37.48
+Sarnia,With Traffic,Random Forest,2.5567,2.0172,0.4747,39.83
+Sarnia,With Traffic,GAM,3.0492,2.3833,0.2529,44.39
+Sarnia,With Traffic,Stacking Ensemble,2.846,2.2913,0.3491,47.45
+Sarnia,No Traffic,XGBoost,2.4647,1.9217,0.5119,34.96
+Sarnia,No Traffic,Random Forest,2.5055,1.9805,0.4956,38.37
+Sarnia,No Traffic,GAM,2.8026,2.17,0.3688,38.55
+Sarnia,No Traffic,Stacking Ensemble,2.7746,2.2164,0.3814,45.2
 Sault Ste. Marie,With Traffic,XGBoost,1.0081,0.728,0.73,32.2
 Sault Ste. Marie,With Traffic,Random Forest,1.1344,0.8007,0.6582,36.92
 Sault Ste. Marie,With Traffic,GAM,1.1083,0.8086,0.6737,36.91
