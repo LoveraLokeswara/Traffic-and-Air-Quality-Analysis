@@ -16,25 +16,17 @@ These were cleaned, aligned by date and station, and merged into per-station CSV
 ## Original datasets
 
 ### Traffic
-- Typical contents: vehicle counts aggregated by hour/day for road sensors or intersections.
-- Spatial scope: traffic sensors covering roads near air quality monitoring stations.
-- Temporal resolution: original source may be hourly; aggregated to daily counts for the cleaned files.
-- Typical variables: `timestamp`, `location_id`, `vehicle_count` (or `Traffic_Count` after aggregation).
-- Notes: counts may include all vehicles or be stratified by vehicle class in raw data. Processing aggregated counts to daily totals or averages was performed in cleaning.
+- Contents: vehicle counts aggregated by day for road sensors at intersections.
+- Variables: `timestamp`, `location_id`, `traffic_count` (after aggregation).
 
 ### Weather
-- Typical contents: meteorological observations such as temperature, precipitation, wind speed/gust and wind direction, etc.
-- Spatial scope: nearby weather stations (may be airport or local stations) matched to each air quality station.
-- Temporal resolution: commonly hourly; aggregated or interpolated to daily values in cleaned files.
-- Typical variables used here: `Temp` (°C), `Precip` (mm), `Wind_Gust` (speed), `Wind_Dir` (degrees).
-- Notes: check `data/weather/meteorological_metadata.yml` for original station metadata and units.
+- Contents: meteorological observations such as temperature, precipitation, wind speed/gust and wind direction, etc.
+- Variables: `Temp` (°C), `Precip` (mm), `Wind_Gust` (speed), `Wind_Dir` (degrees).
 
 ### Air quality
-- Typical contents: pollutant measurements (e.g., NO₂, PM₂.₅) recorded at monitoring stations.
-- Spatial scope: fixed air-monitoring stations (one per cleaned CSV station row), identified by `Station`.
-- Temporal resolution: many networks record hourly values; this project uses daily aggregated values (daily mean NO₂ represented as `NO2_Mean`).
-- Typical variables used here: `timestamp`/`Date`, `Station`, pollutant concentrations (e.g., `NO2_Mean`).
-- Notes: daily aggregation method (mean) and handling of missing hours is documented in the cleaning script.
+- Contents: pollutant measurements (e.g., NO₂, PM₂.₅) recorded at monitoring stations.
+- Variables: `timestamp`/`Date`, `Station`, pollutant concentrations (e.g., `NO2_Mean`).
+
 
 ---
 
@@ -53,7 +45,7 @@ The cleaned CSVs are stored in `data/data_clean/`. Each file contains daily rows
 | `Wind_Gust`     | float           | Wind gust speed (units as in raw weather data — see metadata). Used to compute wind components. |
 | `Wind_Dir`      | float           | Wind direction in degrees (meteorological degrees, 0–360). Used to compute wind components. |
 
-**Notes & recommendations**
+**Notes
 - Units: most commonly used units are indicated above (°C for temperature, mm for precipitation, ppb for NO₂). For formal reporting, confirm units by reviewing the original raw files or `meteorological_metadata.yml` in `data/weather/`.
-- Aggregation: daily aggregation for `NO2_Mean` and `Traffic_Count` was used in the cleaned files. If you need hourly analysis, consult the original raw datasets in `data/traffic/` and `data/weather/`.
+- Aggregation: daily aggregation for `NO2_Mean` and `Traffic_Count` was used in the cleaned files.
 - Missing values: the cleaning pipeline interpolates temperature and wind values, fills precipitation missing values with 0 when appropriate, and drops rows that remain missing for required feature columns. See `src/data_clean.py` for the exact cleaning logic.
