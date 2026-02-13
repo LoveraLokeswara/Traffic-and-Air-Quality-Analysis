@@ -15,17 +15,20 @@ These were cleaned, aligned by date and station, and merged into per-station CSV
 
 ## Original datasets
 
-### Traffic
+### Traffic 
 - Contents: vehicle counts aggregated by day for road sensors at intersections.
 - Variables: `timestamp`, `location_id`, `traffic_count` (after aggregation).
+- Link to dataset: https://www.airqualityontario.com/history/index.php
 
 ### Weather
 - Contents: meteorological observations such as temperature, precipitation, wind speed/gust and wind direction, etc.
 - Variables: `Temp` (°C), `Precip` (mm), `Wind_Gust` (speed), `Wind_Dir` (degrees).
+- Link to dataset: https://climate.weather.gc.ca
 
 ### Air quality
 - Contents: pollutant measurements (e.g., NO₂, PM₂.₅) recorded at monitoring stations.
 - Variables: `timestamp`/`Date`, `Station`, pollutant concentrations (e.g., `NO2_Mean`).
+- Link to dataset: https://www150.statcan.gc.ca/n1/pub/71-607-x/71-607-x2022018-eng.htm
 
 
 ---
