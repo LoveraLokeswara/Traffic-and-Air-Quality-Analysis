@@ -3,7 +3,7 @@ Data Cleaning Pipeline
 ======================
 Reads station configurations from stations.txt, loads raw Air Quality, Traffic,
 and Weather data, merges them on a common (Station, Date) index, and performs
-advanced Multiple Imputation using scikit-learn's IterativeImputer.
+advanced imputation using scikit-learn's IterativeImputer.
 
 """
 
@@ -20,7 +20,7 @@ import pandas as pd  # DataFrame manipulation and CSV I/O
 # Enable IterativeImputer (still experimental in scikit-learn)
 # This is required before importing IterativeImputer from sklearn.impute
 from sklearn.experimental import enable_iterative_imputer  # noqa: F401
-# IterativeImputer performs MICE (Multivariate Imputation by Chained Equations)
+# IterativeImputer performs multivariate imputation
 # to fill missing values by modeling each feature with missing values as a function
 # of other features in an iterative manner
 from sklearn.impute import IterativeImputer

@@ -662,9 +662,9 @@ def plot_model_performance(all_results: dict, stations: list[str], scenario_tag:
         ax.grid(True, alpha=0.3, axis="x")
 
     if toronto:
-        axes_dict[toronto[0]].set_ylabel("RMSE")
+        axes_dict[toronto[0]].set_ylabel("Model")
     if others:
-        axes_dict[others[0]].set_ylabel("RMSE")
+        axes_dict[others[0]].set_ylabel("Model")
 
     fig.suptitle(f"Model Performance – RMSE ({scenario_tag})",
                  fontweight="bold", y=0.98)
