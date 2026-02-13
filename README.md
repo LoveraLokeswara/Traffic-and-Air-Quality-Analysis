@@ -100,7 +100,7 @@ All models are evaluated using:
 
 Full results are stored in:
 
-- `all_model_results.csv` – Full results table
+- `all_model_results.csv` – Full raw results table
 
 ## Key Outputs
 The analysis generates the following artifacts in the `results/` directory:
@@ -109,4 +109,4 @@ The analysis generates the following artifacts in the `results/` directory:
 
 * **`feature_importance_*.png`:** Top predictors identified by XGBoost
 
-* **`model_performance_*.png`:** Comprehensive RMSE and R²
+* **`model_performance_*.png`:** Comprehensive RMSE comparison
