@@ -1,8 +1,8 @@
 Station,Scenario,GAM,Random Forest,Stacking Ensemble,XGBoost
 Ottawa Downtown,No Traffic,1.6767,1.3266,1.9954,1.3069
 Ottawa Downtown,With Traffic,1.6636,1.3549,1.9861,1.3061
-Sarnia,No Traffic,2.7748,2.5165,2.6612,2.3788
-Sarnia,With Traffic,2.8149,2.5019,2.7491,2.4103
+Sarnia,No Traffic,2.8026,2.5055,2.7746,2.4647
+Sarnia,With Traffic,3.0492,2.5567,2.846,2.5428
 Sault Ste. Marie,No Traffic,1.1789,1.168,1.6497,1.1333
 Sault Ste. Marie,With Traffic,1.1083,1.1344,1.5902,1.0081
 Toronto Downtown,No Traffic,3.4824,3.1028,4.2611,3.225

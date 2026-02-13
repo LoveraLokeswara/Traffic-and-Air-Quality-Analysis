@@ -49,6 +49,7 @@ The cleaned CSVs are stored in `data/data_clean/`. Each file contains daily rows
 | `Wind_Dir`      | float           | Wind direction in degrees (meteorological degrees, 0–360). |
 
 **Notes
+- `data/data_clean/stations.txt` tells `src/data_clean.py` how to link raw air quality, weather, and traffic station data for a specific location.
 - Units: most commonly used units are indicated above (°C for temperature, mm for precipitation, ppb for NO₂)
 - Aggregation: daily aggregation for `NO2_Mean` and `Traffic_Count` was used in the cleaned files.
 - Missing values: missing values were filled using Scikit-learn’s IterativeImputer
