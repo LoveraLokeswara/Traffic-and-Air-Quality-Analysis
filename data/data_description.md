@@ -17,7 +17,7 @@ These were cleaned, aligned by date and station, and merged into per-station CSV
 
 ### Traffic 
 - Contents: vehicle counts aggregated by day for road sensors at intersections.
-- Variables: `timestamp`, `location_id`, `traffic_count`.
+- Variables: `Date`, `Traffic_Source`, `Traffic_Count`.
 - Link to dataset: https://www.airqualityontario.com/history/index.php
 
 ### Weather
@@ -27,7 +27,7 @@ These were cleaned, aligned by date and station, and merged into per-station CSV
 
 ### Air quality
 - Contents: pollutant measurements (e.g., NO₂) recorded at monitoring stations.
-- Variables: `timestamp`/`Date`, `Station`, pollutant concentrations (e.g., `NO2_Mean`).
+- Variables: `Date`,`Hour`, `Station`, pollutant concentrations (e.g., `NO2_Mean`).
 - Link to dataset: https://www150.statcan.gc.ca/n1/pub/71-607-x/71-607-x2022018-eng.htm
 
 
@@ -42,7 +42,7 @@ The cleaned CSVs are stored in `data/data_clean/`. Each file contains daily rows
 | `Station`       | string          | Station name / monitoring site identifier (e.g., "Ottawa Downtown"). One value repeated per file (one file per station). |
 | `Date`          | date            | Observation date (ISO format YYYY-MM-DD). Daily aggregation timestamp. |
 | `NO2_Mean`      | float           | Daily mean NO₂ concentration at the station (ppb: parts per billion). Aggregated from hourly measurements. |
-| `Traffic_Count` | integer/float   | Daily traffic count for the location matched to the station (units: vehicle counts) |
+| `Traffic_Count` | integer   | Daily traffic count for the location matched to the station (units: vehicle counts) |
 | `Temp`          | float           | Daily mean temperature (°C). |
 | `Precip`        | float           | Daily total precipitation (mm). |
 | `Wind_Gust`     | float           | Wind gust speed (km).|
