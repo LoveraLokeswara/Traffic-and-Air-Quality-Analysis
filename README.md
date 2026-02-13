@@ -98,16 +98,15 @@ All models are evaluated using:
 - **R²** (Coefficient of Determination)
 - **MAPE** (Mean Absolute Percentage Error)
 
-Results are stored in:
+Full results are stored in:
 
 - `all_model_results.csv` – Full results table
-- `rmse_comparison_pivot.csv` – Quick comparison across stations/scenarios
 
 ## Key Outputs
 The analysis generates the following artifacts in the `results/` directory:
 
-* **`traffic_impact_comparison.png`:** Direct RMSE comparison between traffic and no-traffic models.
+* **`traffic_impact_comparison.png`:** Direct RMSE comparison between traffic and no-traffic models
 
-* **`feature_importance_*.png`:** Top predictors identified by XGBoost.
+* **`feature_importance_*.png`:** Top predictors identified by XGBoost
 
-* **`model_performance_*.png`:** Comprehensive RMSE and R² metrics.
+* **`model_performance_*.png`:** Comprehensive RMSE and R²
